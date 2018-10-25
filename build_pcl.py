@@ -12,6 +12,7 @@ import pdb
 INSTALL_ROOT='/home/personnel/SINA/Drouinan/local_pcl' #/media/commun_mialp_eleves/ASNAT/local_pcl'
 BUILD_ROOT='/tmp/build_drouin'
 DOWNLOAD_ROOT='/tmp/download_drouin'
+SCRIPT_PATH = os.path.realpath(sys.argv[0])
 
 def clean_filesystem(clean_dl, clean_build, clean_install):
     for d, f in zip((DOWNLOAD_ROOT, BUILD_ROOT, INSTALL_ROOT),
@@ -167,5 +168,4 @@ def main():
 
     
 if __name__ == "__main__":
-    SCRIPT_PATH=os.path.realpath(sys.argv[0])
     main()
