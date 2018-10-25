@@ -5,11 +5,11 @@ Build and install a local version of lib pcl in ENAC's classrooms
 
 '''
 
-import os, shutil
+import os, sys, shutil
 import urllib.request
 import pdb
 
-INSTALL_ROOT='/home/personnel/SINA/Drouinan/local_pcl' #/src/enac_stuff'/media/commun_mialp_eleves'
+INSTALL_ROOT='/home/personnel/SINA/Drouinan/local_pcl' #/media/commun_mialp_eleves/ASNAT/local_pcl'
 BUILD_ROOT='/tmp/build_drouin'
 DOWNLOAD_ROOT='/tmp/download_drouin'
 
@@ -120,17 +120,32 @@ class Pcl:
         _system('cmake {} ..'.format(cmake_options))
         _system('make'); _system('make install')
 
+
+
+class PythonPcl:
+    dl_target = os.path.join(BUILD_ROOT, 'python-pcl')
+    def download():
+        os.chdir(BUILD_ROOT)
+        _system('git clone https://github.com/strawlab/python-pcl.git')
         
-        #cmake .. -DEIGEN_INCLUDE_DIR=/home/personnel/SINA/Drouinan/src/eigen3 -DCMAKE_INSTALL_PREFIX:PATH=/home/personnel/SINA/Drouinan/local_pcl_install  -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DBUILD_visualization=on -DQHULL_INCLUDE_DIR=PATH=/media/commun_mialp_eleves/ASNAT/local_pcl_install/include
-
-
-
+    def install():
+        SRC_ROOT = BUILD_ROOT+'/python-pcl'
+        os.chdir(SRC_ROOT)
+        patch_path = os.path.join(os.path.dirname(SCRIPT_PATH), 'patch_python_pcl.diff')
+        print(patch_path)
+        _system('patch -p7 < {}'.format(patch_path))
+        cmd_build = 'CPPFLAGS="-std=c++11" PKG_CONFIG_PATH=/home/personnel/SINA/Drouinan/local_pcl/share/pkgconfig:/home/personnel/SINA/Drouinan/local_pcl/lib/pkgconfig/ python setup.py install'
+        _system('. /home/personnel/SINA/Drouinan/venv/bin/activate; {}'.format(cmd_build))
         
         
 def download(c, force=False):
-    if force or not os.path.isfile(c.dl_target):
-        print('Downloading {} to {}'.format(c.dl_url, c.dl_target))
-        urllib.request.urlretrieve(c.dl_url, c.dl_target)
+    print(c.dl_target)
+    if force or not os.path.exists(c.dl_target):
+        try: # if the class has a specific download method, use it
+            c.download()
+        except AttributeError: # else download c.dl_url
+            print('Downloading {} to {}'.format(c.dl_url, c.dl_target))
+            urllib.request.urlretrieve(c.dl_url, c.dl_target)
     else:
         print('{} exists, not downloading'.format(c.dl_target))
         
@@ -141,8 +156,8 @@ def install(c):
 def main():
     clean_filesystem(clean_dl=False, clean_build=False, clean_install=False)
     create_filesystem()
-    for c in [Eigen, Flann, Vtk, Qhull]: c.ignore = True
-    for c in [Eigen, Flann, Vtk, Qhull, Pcl]:
+    for c in [Eigen, Flann, Vtk, Qhull, Pcl]: c.ignore = True
+    for c in [Eigen, Flann, Vtk, Qhull, Pcl, PythonPcl]:
         print('### {} ###'.format(c.__name__))
         if hasattr(c, 'ignore'):
             print('  ignoring')
@@ -152,4 +167,5 @@ def main():
 
     
 if __name__ == "__main__":
+    SCRIPT_PATH=os.path.realpath(sys.argv[0])
     main()

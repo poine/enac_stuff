@@ -1,0 +1,19 @@
+--- /tmp/build_drouin/python-pcl/setup.py	2018-10-25 15:01:23.897746936 +0200
++++ /home/personnel/SINA/Drouinan/src/python-pcl/setup.py	2018-10-25 14:48:18.402008000 +0200
+@@ -550,6 +550,7 @@
+     # "-I/usr/include/openni"
+     # /usr/include/ni
+     ext_args['include_dirs'].append('/usr/include/ni')
++    ext_args['include_dirs'].append('/home/personnel/SINA/Drouinan/local_pcl/include/vtk-8.1')
+     # ext_args['library_dirs'].append()
+     # ext_args['libraries'].append()
+ 
+@@ -628,7 +629,7 @@
+                   ]
+     elif pcl_version == '-1.8':
+         module = [Extension("pcl._pcl", ["pcl/_pcl_180.pyx", "pcl/minipcl.cpp", "pcl/ProjectInliers.cpp"], language="c++", **ext_args),
+-                  # Extension("pcl.pcl_visualization", ["pcl/pcl_visualization.pyx"], language="c++", **ext_args),
++                  Extension("pcl.pcl_visualization", ["pcl/pcl_visualization.pyx"], language="c++", **ext_args),
+                   # Extension("pcl.pcl_grabber", ["pcl/pcl_grabber.pyx", "pcl/grabber_callback.cpp"], language="c++", **ext_args),
+                   # debug
+                   # gdb_debug=True,
